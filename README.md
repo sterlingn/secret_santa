@@ -6,4 +6,4 @@ If either of these answers is yes, you've come to the right place. This code Jos
 the different participants and match them to someone else (no same person picking). Josh added the option to send the email itself or to print 
 the selections to a folder, and then you can send the files out based on the names written on each file.
 
-
+![alt text](https://images.unsplash.com/photo-1450198342040-c32e6d1ef2e4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1932&q=80)
