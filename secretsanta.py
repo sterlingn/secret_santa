@@ -12,12 +12,10 @@ from email.message import EmailMessage
 
 # Add entries here with the format "<name>": "<email>",
 SS_DICT = {
-    "Josh-n-Ginny": "joshvibrittania@gmail.com",
-    "Nalex": "sterlingn8@gmail.com",
-    "Shira": "Shiradanielles@gmail.com",
-    "James": "Thinharath@gmail.com",
-    "Momma": "rsterling1982@gmail.com",
-    "Daley": "dalesterling88@gmail.com",
+    "Person1": "email",
+    "Person2": "email",
+    "Person3": "email",
+    "etc...": "etc..."
 }
 
 # Constants
