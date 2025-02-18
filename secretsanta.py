@@ -18,19 +18,19 @@ SS_DICT = {
     "etc...": "etc..."
 }
 
-# Constants
+# Constants: This is the file path to save the text files to 
 CURR_PATH = str(pathlib.Path(__file__).parent.resolve()) # TODO: doesn't seem to use the files directory
 FILE_FMT = "For_{}.txt"
-
+# This is the email address and password to send the emails from
 EMAIL_SENDER = 'sendjunkthru@gmail.com'
 EMAIL_PASSWORD = 'vvdmqzhwudhyxclq'
 
 # Class for each secret santa and their person
 class SecretSanta:
-    # Constants
+    # Constants this is the format for the text files
     PRINT_FMT = "SecretSanta: {}, Person: {}"
     SAVE_FMT = "This is for {}!\nYou have been given {}!\nDon't tell anyone!"
-
+    #This is where we define who the email sender is 
     def __init__(self, me: str, email: str = ""):
         """Initializer
 
