@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 import glob
+import json
 import os
 import pathlib
 import random
@@ -9,27 +10,48 @@ import smtplib
 import ssl
 from typing import List
 from email.message import EmailMessage
+# Python script
+from dotenv import load_dotenv
+from pathlib import Path
+import os
 
+# optional: explicit path to .env
+env_path = Path(__file__).resolve().parent / ".env"
+load_dotenv(dotenv_path=env_path)  # returns True if loaded
+
+
+TESTING = os.getenv("TESTING", "False").lower() in ("true", "1", "t")
 # Add entries here with the format "<name>": "<email>",
-SS_DICT = {
-    "Person1": "email",
-    "Person2": "email",
-    "Person3": "email",
-    "etc...": "etc..."
-}
+ss_dict_env = "SS_DICT_TESTING" if TESTING else "SS_DICT"
+ss_dict_value = os.getenv(ss_dict_env)
+if not ss_dict_value:
+    raise ValueError(f"{ss_dict_env} is missing from environment variables or .env file!")
+
+try:
+    SS_DICT = json.loads(ss_dict_value)
+except json.JSONDecodeError as exc:
+    raise ValueError(f"{ss_dict_env} must contain a valid JSON object.") from exc
+
+if not isinstance(SS_DICT, dict) or not all(
+    isinstance(name, str) and isinstance(email, str)
+    for name, email in SS_DICT.items()
+):
+    raise ValueError(f"{ss_dict_env} must be a JSON object of names to email addresses.")
 
 # Constants: This is the file path to save the text files to 
 CURR_PATH = str(pathlib.Path(__file__).parent.resolve()) # TODO: doesn't seem to use the files directory
 FILE_FMT = "For_{}.txt"
 # This is the email address and password to send the emails from
-EMAIL_SENDER = 'sendjunkthru@gmail.com'
-EMAIL_PASSWORD = 'vvdmqzhwudhyxclq'
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+EMAIL_SENDER = os.getenv("EMAIL_SENDER")
+if not EMAIL_SENDER or not EMAIL_PASSWORD:
+    raise ValueError("CRITICAL: EMAIL_SENDER or EMAIL_PASSWORD is missing from environment variables or .env file!")
 
 # Class for each secret santa and their person
 class SecretSanta:
     # Constants this is the format for the text files
     PRINT_FMT = "SecretSanta: {}, Person: {}"
-    SAVE_FMT = "This is for {}!\nYou have been given {}!\nDon't tell anyone!"
+    SAVE_FMT = "🎅 🎄 🎁 ✨ This is for {}!\nYou have been given {}!\nDon't tell anyone! Ho, Ho, Ho and Stuff! 🎅 🎄 🎁 ✨"
     #This is where we define who the email sender is 
     def __init__(self, me: str, email: str = ""):
         """Initializer
@@ -147,12 +169,24 @@ class SecretSanta:
         em["To"] = self._email
         em["Subject"] = "Secret Santa"
         em.set_content(self.toStr())
+        image_path = Path(__file__).resolve().parent /  "christmas_office_meme.jpg"
+        em.add_attachment(
+            image_path.read_bytes(),
+            maintype="image",
+            subtype="jpeg",
+            filename=image_path.name,
+        )
 
         context = ssl.create_default_context()
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
-            smtp.login(EMAIL_SENDER, EMAIL_PASSWORD)
-            smtp.sendmail(EMAIL_SENDER, self._email, em.as_string())
-
+        # Change connection method and port:
+        try:
+            with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+                smtp.starttls(context=context) # Start TLS encryption
+                smtp.login(EMAIL_SENDER, EMAIL_PASSWORD)
+                smtp.sendmail(EMAIL_SENDER, self._email, em.as_string())
+                print("Email sent successfully using port 587 (TLS)!")
+        except smtplib.SMTPAuthenticationError:
+            print("Authentication failed. Double-check your 16-character App Password.")
 
 def cleanup():
     """Remove old files that match the constant FILE_FMT"""
@@ -204,4 +238,3 @@ if __name__ == "__main__":
             # No email, save to text file instead
             print("Saving file for {} to {}".format(SS.getMe(), SS.getFileName()))
             SS.save()
-    

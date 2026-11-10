@@ -1,0 +1,14 @@
+[project]
+name = "ho-ho-ho"
+version = "0.1.0"
+description = "Secret Santa Project"
+readme = "README.md"
+authors = [
+  { name = "Josh and Nate", email = "jishynalex@example.org" }
+]
+requires-python = ">=3.14"
+dependencies = ["pandas", "openpyxl", "python-dotenv"]
+
+[build-system]
+requires = ["uv_build>=0.13.7,<0.14"]
+build-backend = "uv_build"
